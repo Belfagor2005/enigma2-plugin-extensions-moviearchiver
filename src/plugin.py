@@ -28,8 +28,8 @@ from os import (
     walk,
     access,
     stat,
-    statvfs,
     W_OK,
+    statvfs,
 )
 from os.path import (
     getmtime,
@@ -74,6 +74,8 @@ from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Tools import Notifications
 import NavigationInstance
+import math
+import os
 
 # PLUGIN IMPORTS
 from . import (
@@ -150,7 +152,8 @@ class MAglobs():
                 if dirPath.endswith("/"):
                     pathToCheck = dirPath
                 else:
-                    pathToCheck = f"{dirPath}/"
+                    # pathToCheck = f"{dirPath}/"
+                    pathToCheck = dirPath + "/"
                 if excludeDirs is not None:  # skip, if path found in excludeDirs
                     for excludeDir in excludeDirs:
                         if pathToCheck[:len(excludeDir)] == excludeDir:
@@ -181,20 +184,35 @@ class MAglobs():
                 tmpExcludedDirs.append(folder)
         return tmpExcludedDirs
 
-    def getFreeDiskspace(self, mediapath):
-        if exists(mediapath):  # Check free space on path
-            stat = statvfs(mediapath)
-            free = (stat.f_bavail if stat.f_bavail != 0 else stat.f_bfree) * stat.f_bsize // 1024 // 1024  # MB
-            return free
-        return 0  # maybe call exception
 
+    def getFreeDiskspace(self, mediapath):
+        try:
+            if exists(mediapath):  # Check free space on path
+                # total, free = self.getFreeDiskspace(mediapath)
+                stat = statvfs(mediapath)
+                free = (stat.f_bavail if stat.f_bavail != 0 else stat.f_bfree) * stat.f_bsize // 1024 // 1024  # MB
+                return free
+            return 0  # maybe call exception
+        except Exception as e:
+            print('error memfree', e)
+
+    # def getFreeDiskspaceText(self, mediapath):
+        # free = self.getFreeDiskspace(mediapath)
+        # return f"{free} GB"if free >= 10 * 1024 else f"{free} MB" % (free)  # MB
+     
     def getFreeDiskspaceText(self, mediapath):
-        free = self.getFreeDiskspace(mediapath)
-        return f"{free} GB"if free >= 10 * 1024 else f"{free} MB" % (free)  # MB
+        fspace = freespace(mediapath)
+        return fspace
 
     def reachedLimit(self, mediapath, limit):
         free = self.getFreeDiskspace(mediapath)
         return True if limit > (free // 1024) else False  # GB
+
+    # def reachedLimit(self, mediapath, limit):
+        # free = self.getFreeDiskspace(mediapath)
+        # print('free:', type(free))  # str
+        # print('limit:', type(limit))  # int 
+        # return True if float(int(limit)) > ((free // 1024)) else False  # GB
 
     def checkReachedLimitIfMoveFile(self, mediapath, limit, moviesFileSize):
         freeDiskSpace = self.getFreeDiskspace(mediapath)
@@ -342,7 +360,12 @@ class MovieManager(MAglobs, object):  # classdocs
         self.executionQueueList = deque()
         self.executionQueueListInProgress = False
         self.console = eConsoleAppContainer()
-        self.console.appClosed.append(self.__runFinished)
+        # self.console.appClosed.append(self.__runFinished)
+        try:  # DreamOS
+            self.console.appClosed.append(self.__runFinished)
+        except:
+            self.console.appClosed_conn = self.console.appClosed.connect(self.__runFinished)
+        # self.onLayoutFinish.append(self.running)
 
     def running(self):
         return self.executionQueueListInProgress
@@ -482,10 +505,10 @@ class MovieManager(MAglobs, object):  # classdocs
 class ExcludeDirsView(Screen):
     skin = """
         <screen name="ExcludeDirsView" position="center,center" size="560,400" resolution="1280,720" title="Select folders to exclude">
-            <widget name="excludeDirList" position="5,0" size="550,320" transparent="1" scrollbarMode="showOnDemand" />
-            <widget source="key_red" render="Label" font="Regular; 20" foregroundColor="unffffff" backgroundColor="#20000000" halign="left" position="20,365" size="250,33" transparent="1" />
-            <widget source="key_green" render="Label" font="Regular; 20" foregroundColor="unffffff" backgroundColor="#20000000" halign="left" position="185,365" size="250,33" transparent="1" />
-            <widget source="key_yellow" render="Label" font="Regular; 20" foregroundColor="unffffff" backgroundColor="#20000000" halign="left" position="335,365" size="250,33" transparent="1" />
+            <widget name="excludeDirList" position="5,0" size="550,320" itemHeight="40"  transparent="1" scrollbarMode="showOnDemand" />
+            <widget source="key_red" render="Label" font="Regular; 20" foregroundColor="#b0b0b0" backgroundColor="#20000000" halign="left" position="20,365" size="250,33" transparent="1" />
+            <widget source="key_green" render="Label" font="Regular; 20" foregroundColor="#b0b0b0" backgroundColor="#20000000" halign="left" position="185,365" size="250,33" transparent="1" />
+            <widget source="key_yellow" render="Label" font="Regular; 20" foregroundColor="#b0b0b0" backgroundColor="#20000000" halign="left" position="335,365" size="250,33" transparent="1" />
             <eLabel position="5,360" size="5,40" backgroundColor="#e61700" />
             <eLabel position="170,360" size="5,40" backgroundColor="#61e500" />
             <eLabel position="320,360" size="5,40" backgroundColor="#e5dd00" />
@@ -563,15 +586,15 @@ class MovieArchiverView(ConfigListScreen, Screen):
     skin = """
         <screen name="MovieArchiver-Setup" position="center,center" size="1000,500" resolution="1280,720" flags="wfNoBorder" backgroundColor="#90000000">
             <eLabel name="new eLabel" position="0,0" zPosition="-2" size="630,500" backgroundColor="#20000000" transparent="0" />
-            <eLabel font="Regular;20" foregroundColor="unffffff" backgroundColor="#20000000" halign="left" position="37,465" size="250,33" text="Cancel" transparent="1" />
-            <eLabel font="Regular;20" foregroundColor="unffffff" backgroundColor="#20000000" halign="left" position="235,465" size="250,33" text="Save" transparent="1" />
-            <widget source="archiveButton" render="Label" font="Regular;20" foregroundColor="unffffff" backgroundColor="#20000000" halign="left" position="432,465" size="250,33" transparent="1" />
-            <widget name="config" position="21,74" size="590,360" font="Regular;20" scrollbarMode="showOnDemand" transparent="1" />
+            <eLabel font="Regular;20" foregroundColor="#b0b0b0" backgroundColor="#20000000" halign="left" position="37,465" size="250,33" text="Cancel" transparent="1" />
+            <eLabel font="Regular;20" foregroundColor="#b0b0b0" backgroundColor="#20000000" halign="left" position="235,465" size="250,33" text="Save" transparent="1" />
+            <widget source="archiveButton" render="Label" font="Regular;20" foregroundColor="#b0b0b0" backgroundColor="#20000000" halign="left" position="432,465" size="250,33" transparent="1" />
+            <widget name="config" position="21,74" size="590,360" scrollbarMode="showOnDemand" transparent="1" />
             <eLabel name="new eLabel" position="640,0" zPosition="-2" size="360,500" backgroundColor="#20000000" transparent="0" />
             <widget source="help" render="Label" position="660,74" size="320,460" font="Regular;20" />
             <eLabel position="660,15" size="360,50" text="Help" font="Regular;40" valign="center" transparent="1" backgroundColor="#20000000" />
             <eLabel position="20,15" size="348,50" text="MovieArchiver" font="Regular;40" valign="center" transparent="1" backgroundColor="#20000000" />
-            <eLabel position="303,18" size="349,50" text="Setup" foregroundColor="unffffff" font="Regular;30" valign="center" backgroundColor="#20000000" transparent="1" halign="left" />
+            <eLabel position="303,18" size="349,50" text="Setup" foregroundColor="#b0b0b0" font="Regular;30" valign="center" backgroundColor="#20000000" transparent="1" halign="left" />
             <eLabel position="415,460" size="5,40" backgroundColor="#e5dd00" />
             <eLabel position="220,460" size="5,40" backgroundColor="#61e500" />
             <eLabel position="20,460" size="5,40" backgroundColor="#e61700" />
@@ -724,6 +747,31 @@ class MovieArchiverView(ConfigListScreen, Screen):
 
     def __onClose(self):
         self.notificationController.setView(None)
+
+
+def convert_size(size_bytes):
+    if size_bytes == 0:
+        return "0B"
+    size_name = ("B", "KB", "MB", "GB", "TB")
+    i = int(math.floor(math.log(size_bytes, 1024)))
+    p = math.pow(1024, i)
+    s = round(size_bytes / p, 2)
+    return "%s %s" % (s, size_name[i])
+
+
+def freespace(mediapath):
+    try:
+        stat = statvfs(mediapath)
+        free_bytes = stat.f_bfree * stat.f_bsize
+        total_bytes = stat.f_blocks * stat.f_bsize
+        fspace = convert_size(float(free_bytes))
+        # total_space = convert_size(float(total_bytes))
+        # spacestr = _("Free Space:") + " " + str(fspace) + " " + _("of") + " " + str(total_space)
+        # return spacestr        
+        return total_bytes, fspace
+    except Exception as e:
+        print("Error getting disk space:", e)
+        return _("Free Space:") + " -?- " + _("of") + " -?-"
 
 
 def autostart(reason, **kwargs):  # Autostart
