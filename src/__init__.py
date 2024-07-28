@@ -24,7 +24,14 @@
 from gettext import bindtextdomain, dgettext, gettext
 
 # ENIGMA IMPORTS
-from Components.config import config, ConfigSubsection, ConfigNumber, ConfigText, ConfigYesNo, ConfigLocations
+from Components.config import (
+    config,
+    ConfigSubsection,
+    ConfigNumber,
+    ConfigText,
+    ConfigYesNo,
+    ConfigLocations,
+)
 from Components.Language import language
 from Tools.Directories import resolveFilename, SCOPE_HDD, SCOPE_PLUGINS
 
@@ -33,11 +40,11 @@ PluginLanguagePath = "Extensions/MovieArchiver/locale"
 
 
 def localeInit():
-	bindtextdomain(PluginLanguageDomain, resolveFilename(SCOPE_PLUGINS, PluginLanguagePath))
+    bindtextdomain(PluginLanguageDomain, resolveFilename(SCOPE_PLUGINS, PluginLanguagePath))
 
 
 def _(txt):
-	return dgettext(PluginLanguageDomain, txt) if dgettext(PluginLanguageDomain, txt) else gettext(txt)
+    return dgettext(PluginLanguageDomain, txt) if dgettext(PluginLanguageDomain, txt) else gettext(txt)
 
 
 localeInit()
@@ -45,7 +52,7 @@ language.addCallback(localeInit)
 
 
 def printToConsole(msg):
-	print("[MovieArchiver] %s" % msg)
+    print("[MovieArchiver] %s" % msg)
 
 
 # Define Settings Entries
@@ -56,7 +63,7 @@ config.plugins.MovieArchiver.skipDuringRecords = ConfigYesNo(default=True)
 config.plugins.MovieArchiver.showLimitReachedNotification = ConfigYesNo(default=True)
 defaultDir = resolveFilename(SCOPE_HDD)  # default hdd
 if config.movielist.videodirs.getValue() and len(config.movielist.videodirs.getValue()) > 0:
-	defaultDir = config.movielist.videodirs.getValue()[0]
+    defaultDir = config.movielist.videodirs.getValue()[0]
 config.plugins.MovieArchiver.sourcePath = ConfigText(default=defaultDir, fixed_size=False, visible_width=30)
 config.plugins.MovieArchiver.sourcePath.lastValue = config.plugins.MovieArchiver.sourcePath.getValue()
 config.plugins.MovieArchiver.sourceLimit = ConfigNumber(default=30)
@@ -69,19 +76,19 @@ config.plugins.MovieArchiver.targetLimit = ConfigNumber(default=30)  # interval
 
 
 def getSourcePath():
-	return config.plugins.MovieArchiver.sourcePath
+    return config.plugins.MovieArchiver.sourcePath
 
 
 def getSourcePathValue():
-	return getSourcePath().getValue()
+    return getSourcePath().getValue()
 
 
 def getTargetPath():
-	return config.plugins.MovieArchiver.targetPath
+    return config.plugins.MovieArchiver.targetPath
 
 
 def getTargetPathValue():
-	return getTargetPath().getValue()
+    return getTargetPath().getValue()
 
 
 __all__ = ['_', 'config', 'printToConsole', 'getSourcePath', 'getSourcePathValue', 'getTargetPath', 'getTargetPathValue']
