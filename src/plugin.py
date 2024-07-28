@@ -22,7 +22,15 @@
 
 # PYTHON IMPORTS
 from collections import deque
-from os import makedirs, listdir, walk, access, stat, statvfs, W_OK
+from os import (
+    makedirs,
+    listdir,
+    walk,
+    access,
+    stat,
+    statvfs,
+    W_OK,
+)
 from os.path import (
     getmtime,
     join,
@@ -36,6 +44,7 @@ from os.path import (
     exists,
     splitext,
     getsize,
+    exists,
 )
 from pipes import quote
 from six import iteritems
@@ -136,7 +145,12 @@ class MAglobs():
                     continue
                 fullFilePath = join(dirPath, fileName)
                 skipFile = False
-                pathToCheck = dirPath if dirPath.endswith("/") else f"{dirPath}/"
+                # pathToCheck = dirPath if dirPath.endswith("/") else f"{dirPath}/"
+                pathToCheck = dirPath
+                if dirPath.endswith("/"):
+                    pathToCheck = dirPath
+                else:
+                    pathToCheck = f"{dirPath}/"
                 if excludeDirs is not None:  # skip, if path found in excludeDirs
                     for excludeDir in excludeDirs:
                         if pathToCheck[:len(excludeDir)] == excludeDir:
@@ -204,10 +218,10 @@ class RecordNotification(MAglobs):
     def startTimer(self):
         self.forceBindRecordTimer = eTimer()
         self.forceBindRecordTimer.callback.append(self.__begin)
-        if os.path.exists('/var/lib/dpkg/info'):
-            self.forceBindRecordTimer_conn = self.forceBindRecordTimer.timeout.connect(self.load_getcl(data))
+        if exists('/var/lib/dpkg/info'):
+            self.forceBindRecordTimer_conn = self.forceBindRecordTimer.timeout.connect(self.load_getcl(self.__begin))
         else:
-            self.forceBindRecordTimer.callback.append(self.load_getcl(data))
+            self.forceBindRecordTimer.callback.append(self.load_getcl(self.__begin))
 
         if self.isActive():
             self.forceBindRecordTimer.stop()
@@ -486,17 +500,15 @@ class ExcludeDirsView(Screen):
         self.dirList = MultiFileSelectList(self.excludedDirs, getSourcePathValue(), showFiles=False)
         self["excludeDirList"] = self.dirList
         self["actions"] = ActionMap(["DirectionActions", "OkCancelActions", "ShortcutActions"],
-                                    {
-                                        "cancel": self.exit,
-                                        "red": self.exit,
-                                        "yellow": self.changeSelectionState,
-                                        "green": self.saveSelection,
-                                        "ok": self.okClicked,
-                                        "left": self.left,
-                                        "right": self.right,
-                                        "down": self.down,
-                                        "up": self.up
-                                    }, -1)
+                                    {"cancel": self.exit,
+                                     "red": self.exit,
+                                     "yellow": self.changeSelectionState,
+                                     "green": self.saveSelection,
+                                     "ok": self.okClicked,
+                                     "left": self.left,
+                                     "right": self.right,
+                                     "down": self.down,
+                                     "up": self.up}, -1)
         if self.selectionChanged not in self["excludeDirList"].onSelectionChanged:
             self["excludeDirList"].onSelectionChanged.append(self.selectionChanged)
         self.onLayoutFinish.append(self.layoutFinished)
