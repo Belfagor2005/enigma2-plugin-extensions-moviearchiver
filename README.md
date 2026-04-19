@@ -1,5 +1,4 @@
-enigma2-plugin-extensions-moviearchiver
-============================
+![Visitors](https://komarev.com/ghpvc/?username=Belfagor2005&label=Repository%20Views&color=blueviolet)
 
 ![Screenshot](https://raw.github.com/MovieArchiver/enigma2-plugin-extensions-moviearchiver/master/src/plugin.png)
 
