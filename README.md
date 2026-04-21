@@ -1,6 +1,7 @@
 ![Visitors](https://komarev.com/ghpvc/?username=Belfagor2005&label=Repository%20Views&color=blueviolet)
 
 ![Screenshot](https://raw.github.com/MovieArchiver/enigma2-plugin-extensions-moviearchiver/master/src/plugin.png)
+[![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](https://ko-fi.com/lululla)
 
 
 Archivieren:
