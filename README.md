@@ -19,41 +19,71 @@
 </p>
 
 
-Archivieren:
---------
-Der MovieArchiver archiviert automatisch Aufnahmen von beispielsweise der eingebauten Festplatte auf eine externen USB Festplatte.
-Hat man mehrere Festplatten ist so sichergestellt das die Platte auf der aufgenommen wird Platz für neue Aufnahmen hat.
+# 📦 MovieArchiver
 
-Ist "Automatische Archivieren" aktiviert wird nach jeder Aufnahme geprüft ob das eingestellte Limit erreicht wurde und ggf. so viel alte Aufnahme in das Archiv
-verschoben bis das Limit an Festplattenplatz wieder frei ist.
+---
 
-Folgende Dateienendungen werden archiviert:
-.ts, .avi, .mkv, .mp4, .iso
+## 📁 Archiving
 
-Inkl. der entsprechenden Metadateien wie z.B.:
-.ts.cuts und .ts.meta
---------
+MovieArchiver automatically archives recordings from the internal hard drive (e.g. HDD) to an external USB drive.
 
+If multiple storage devices are used, this ensures that the recording drive always has enough free space for new recordings.
 
-Backup:
---------
-Alternativ kann er auch als Backup Programm genutzt werden (über die Einstellungen einstellbar).
-Zum Backup werden alle Dateien (es gibt keine Dateiendungs-Einschränkung) hinzugefügt die sich im angegebenen Verzeichnis (inkl. aller Unterverzeichnisse) befinden.
---------
+When **Automatic Archiving** is enabled, after each recording the system checks whether the configured storage limit has been reached.  
+If necessary, older recordings are moved to the archive until enough free space is available again.
 
-Deaktiviert kann der MovieArchiver auch manuel über die Einstellungsseite gestartet werden.
+### Supported file extensions for archiving:
+- `.ts`
+- `.avi`
+- `.mkv`
+- `.mp4`
+- `.iso`
 
+### Included metadata files:
+- `.ts.cuts`
+- `.ts.meta`
 
-Wichtig:
-- Nutzung des Scripts auf eigene Gefahr!
+---
 
-Zu Testen:
-- Was passiert wenn der EMC offen ist während eine Archivierung im Hintergrund gestartet wird?
-- Was passiert wenn eine Aufnahme gerade abgespielt wird die im Hintergrund archiviert werden soll?
+## 💾 Backup Mode
 
-Bisher getestet auf folgenden Images/Receivern:
-- openATV / Gigablue Quad
-- HDF / ET9000
+Alternatively, MovieArchiver can also be used as a backup tool (configurable in settings).
 
-Screenshot:
-![Screenshot](https://raw.github.com/MovieArchiver/enigma2-plugin-extensions-moviearchiver/master/screenshots/MovieArchiver.jpg)
+In backup mode, all files inside the selected directory (including all subfolders) are added, **without file extension restrictions**.
+
+---
+
+## ⚙️ Manual Mode
+
+If automatic mode is disabled, MovieArchiver can still be started manually via the settings page.
+
+---
+
+## ⚠️ Important Notice
+
+- Use this script at your own risk.
+
+---
+
+## 🧪 Testing Notes
+
+The following scenarios should be tested:
+
+- What happens if EMC is open while an archive process starts in the background?
+- What happens if a recording is being played while it is being archived?
+
+---
+
+## 🧩 Tested Images / Receivers
+
+- openATV / Gigablue Quad  
+- HDF / ET9000  
+
+---
+
+## 📸 Screenshot
+
+<p align="center">
+  <img src="https://raw.github.com/MovieArchiver/enigma2-plugin-extensions-moviearchiver/master/screenshots/MovieArchiver.jpg" alt="MovieArchiver Screenshot">
+</p>
+
